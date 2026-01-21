@@ -1,4 +1,5 @@
 #include "temp_app.h"
+#include "BoardDefines.h"
 
 #define FLAG_TEMP_COMPLETE  0x54454D50UL /* "TEMP" */
 
@@ -52,15 +53,15 @@ void TempApp_Write(uint32_t srec_addr, uint8_t *data, uint32_t len)
 void TempApp_SetComplete(void)
 {
     Flash_EraseSector(STATUS_FLAG_ADDR);
-
-    Flash_ProgramPhrase(
-        STATUS_FLAG_ADDR,
-        ((uint64_t)FLAG_TEMP_COMPLETE << 32)
-    );
+//    Flash_ProgramPhrase(STATUS_FLAG_ADDR, ((uint64_t)FLAG_TEMP_COMPLETE << 32));
+//    Flash_ProgramPhrase(STATUS_FLAG_ADDR, (uint64_t)FLAG_TEMP_COMPLETE);
+    uint64_t phrase = 0x504D4554FFFFFFFFULL;
+    Flash_ProgramPhrase(STATUS_FLAG_ADDR, phrase);
 }
 
 bool TempApp_IsComplete(void)
 {
+	LMEM->PCCCR |= 0x05000001; // Xóa Cache
     uint32_t flag = *(volatile uint32_t *)STATUS_FLAG_ADDR;
     return (flag == FLAG_TEMP_COMPLETE);
 }

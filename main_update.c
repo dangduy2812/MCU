@@ -1,7 +1,9 @@
 #include "main_update.h"
+#include "interrupt_manager.h"
 
 #define FLAG_MAIN_VALID  0x4D41494EUL /* "MAIN" */
 
+__attribute__((section(".code_ram")))
 void MainApp_Erase(void)
 {
     for(uint32_t addr = MAIN_APP_START_ADDR;
@@ -12,32 +14,7 @@ void MainApp_Erase(void)
     }
 }
 
-// void Copy_Temp_To_Main(void)
-// {
-//     uint8_t buf[256];
-//     uint32_t size = MAIN_APP_END_ADDR - MAIN_APP_START_ADDR + 1;
-
-//     for(uint32_t offset = 0; offset < size; offset += sizeof(buf))
-//     {
-//         Flash_Read(TEMP_APP_START_ADDR + offset, buf, sizeof(buf));
-
-//         for(uint32_t i = 0; i < sizeof(buf); i += FLASH_PHRASE_SIZE)
-//         {
-//             uint64_t phrase = 0;
-
-//             for(uint32_t j = 0; j < FLASH_PHRASE_SIZE; j++)
-//             {
-//                 ((uint8_t*)&phrase)[7 - j] = buf[i + j];
-//             }
-
-//             Flash_ProgramPhrase(
-//                 MAIN_APP_START_ADDR + offset + i,
-//                 phrase
-//             );
-//         }
-//     }
-// }
-
+__attribute__((section(".code_ram")))
 void Copy_Temp_To_Main(uint32_t fw_size)
 {
     uint8_t buf[256];
@@ -80,11 +57,12 @@ void Copy_Temp_To_Main(uint32_t fw_size)
     INT_SYS_EnableIRQGlobal();
 }
 
+__attribute__((section(".code_ram")))
 void MainApp_SetValid(void)
 {
     Flash_EraseSector(STATUS_FLAG_ADDR);
-    Flash_ProgramPhrase(
-        STATUS_FLAG_ADDR,
-        ((uint64_t)FLAG_MAIN_VALID << 32)
-    );
+//    Flash_ProgramPhrase(STATUS_FLAG_ADDR, ((uint64_t)FLAG_MAIN_VALID << 32));
+//    Flash_ProgramPhrase(STATUS_FLAG_ADDR, (uint64_t)FLAG_MAIN_VALID);
+    uint64_t phrase = 0x4E49414DFFFFFFFFULL;
+	Flash_ProgramPhrase(STATUS_FLAG_ADDR, phrase);
 }

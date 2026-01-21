@@ -5,7 +5,6 @@
 #include "mem_map.h"
 
 void MainApp_Erase(void);
-//void Copy_Temp_To_Main(void);
 void Copy_Temp_To_Main(uint32_t fw_size);
 void MainApp_SetValid(void);
 
