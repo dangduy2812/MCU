@@ -1,7 +1,5 @@
 #include "flash_drv.h"
 #include "S32K144.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 /* ================= FTFC status bits ================= */
 #define CCIF_MASK    (1U << 7)
@@ -45,6 +43,7 @@ static void Flash_ClearError(void)
 
 /* ================= Public APIs ================= */
 
+__attribute__((section(".code_ram")))
 bool Flash_EraseSector(uint32_t address)
 {
     uint32_t irq_state = Flash_DisableIRQ();   /* <<< CRITICAL */
@@ -67,6 +66,7 @@ bool Flash_EraseSector(uint32_t address)
     return true;
 }
 
+__attribute__((section(".code_ram")))
 bool Flash_ProgramPhrase(uint32_t address, uint64_t data)
 {
     uint32_t irq_state = Flash_DisableIRQ();   /* <<< CRITICAL */
